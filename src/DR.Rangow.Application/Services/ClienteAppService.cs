@@ -21,7 +21,7 @@ namespace DR.Rangow.Application.Services
         //leitura
         public IEnumerable<ClienteViewModel> ObterAtivos()
         {
-            //Listar uma lista de clientes para ClientesViewsModel
+            //Listar clientes para ClientesViewsModel
             return Mapper.Map<IEnumerable<ClienteViewModel>>(_clienteRepository.ObterAtivos());
         }
 
@@ -49,22 +49,35 @@ namespace DR.Rangow.Application.Services
         public ClienteEnderecoViewModel Adicionar(ClienteEnderecoViewModel clienteEnderecoViewModel)
         {
             var cliente = Mapper.Map<Cliente>(clienteEnderecoViewModel.Cliente);
+            var endereco = Mapper.Map<Endereco>(clienteEnderecoViewModel.Cliente);
 
+            cliente.DefinirComoAtivo();
+            cliente.AdicionarEndereco(endereco);
+
+            if (!cliente.EhValido()) return clienteEnderecoViewModel;
+            _clienteRepository.Adicionar(cliente);
+
+            return clienteEnderecoViewModel;
         }
 
         public ClienteViewModel Atualizar(ClienteViewModel clienteViewModel)
         {
-            throw new NotImplementedException();
+            var cliente = Mapper.Map<Cliente>(clienteViewModel);
+
+            if (!cliente.EhValido()) return clienteViewModel;
+
+            _clienteRepository.Atualizar(cliente);
+            return clienteViewModel;
         }
 
         public void Remover(Guid id)
         {
-            throw new NotImplementedException();
+            _clienteRepository.Remover(id);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _clienteRepository.Dispose();
         }
     }
 }
